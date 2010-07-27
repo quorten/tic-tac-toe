@@ -1,0 +1,37 @@
+Derivation of numerics
+----------------------------------------------------------------------
+Some of the numbers used for drawing throughout this program may seen
+somewhat arbitrary, but most of the numbers are explained in a more
+reasonable sense here.
+
+First of all, all of the numbers have to do with the line width
+according to the screen size.  The smallest acceptable screen size is
+32 X 32, so at that screen size, all line widths should be 1 pixel, or
+for the thickness in GL units 3 / 32 = 0.09375, since the screen
+height in GL units is 3 so that each piece has one unit of space.
+
+Then, for drawing the O's, they are separated from the grid lines by
+half of the line thickness and they are as thick as the lines.  So,
+the outer radius should be 0.5 - (0.09375 / 2) * 2 = 0.40625.  The
+center of a grid line is right between the boundary of two integer
+units, so only half of of grid line goes into a cell and then the half
+line spacing is also subtracted.  The inner radius would be 0.40625 -
+0.09375 = 0.3125.
+
+Finally, for drawing the X's, they are drawn as two quadrilaterals
+since OpenGL does not do a good job for drawing lines with very large
+thicknesses.  First we will just talk about the four vertices of the
+X's.  Since the vertices should not stretch to the end of the cell, we
+will subtract the usual half of a line.  But because the lines are
+thick, they will be drawn with quadrilaterals whose corners further
+stick out from the end points of each line.  So to roughly accommodate
+for that, another half of a line is also subtracted.  So now we have
+0.5 - 0.09375 - 0.09375 / 2 = 0.359375.  In order to draw the
+quadrilaterals, we have to find the vertices of each corner of each
+thick line.  Right now, the coordinates we have are (0.359375,
+0.359375), (-0.359375, -0.359375), (-0.359375, 0.359375), (0.359375,
+-0.359375).  The first two will be used for the first line.  To find
+the quadrilateral's vertices, the thickness of a line, 0.09375, must
+be rotated 45 degrees.  Once you do that, you should add or subtract
+half of those values for each line endpoint in order to get the
+quadrilateral vertices then do that for both lines.
